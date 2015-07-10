@@ -13,10 +13,25 @@ object Labyrinth {
 
   type Coordinate = (Int, Int)
 
-  implicit class CoordinateExt(c: Coordinate) {
+  implicit final class CoordinateExt(c: Coordinate) {
     @inline final def x = c._1
     @inline final def y = c._2
     @inline final def to(d: Direction): Coordinate = (x + d.dx, y + d.dy)
+    @inline final def index(width: Int): Int = c._1 + c._2 * width
+    @inline final def wall(dir: Direction, width: Int): Int = (index(width) * 2, dir) match {
+      case (x, North) => x
+      case (x, East) => x + 1
+      case (x, South) => to(South).wall(North, width)
+      case (y, West) => to(West).wall(East, width)
+    }
+  }
+  
+  object Coordinate {
+    @inline def fromIndex(index: Int, width: Int): Coordinate = {
+      val y = index / width
+      (index - y * width, y)
+    }
+    @inline def fromWall(wall: Int, width: Int) = (fromIndex(wall / 2, width), if (wall % 2 == 0) North else East)
   }
 
   sealed abstract class Direction(val dx: Int, val dy: Int, val wx: Int, val wy: Int) {
