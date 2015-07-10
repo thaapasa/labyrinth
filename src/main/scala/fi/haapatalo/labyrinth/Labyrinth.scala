@@ -5,7 +5,17 @@ import scala.util.Random
 
 class Labyrinth(val width: Int, val height: Int, walls: BitSet) {
 
+  import Labyrinth.CoordinateExt
+
   val numWalls = width * height * 2
+
+  def hasWall(x: Int, y: Int, dir: Labyrinth.Direction) = dir match {
+    case Labyrinth.North if (x < 0 || x >= width || y < 0 || y >= (height - 1)) => true
+    case Labyrinth.South if (x < 0 || x >= width || y < 1 || y >= height) => true
+    case Labyrinth.East if (x < 0 || x >= (width - 1) || y < 0 || y >= height) => true
+    case Labyrinth.West if (x < 1 || x >= width || y < 0 || y >= height) => true
+    case _ => walls((x, y).wall(dir, width))
+  }
 
 }
 
@@ -25,7 +35,7 @@ object Labyrinth {
       case (y, West) => to(West).wall(East, width)
     }
   }
-  
+
   object Coordinate {
     @inline def fromIndex(index: Int, width: Int): Coordinate = {
       val y = index / width
@@ -48,50 +58,30 @@ object Labyrinth {
   case object West extends Direction(-1, 0, -1, 0)
 
   def apply(width: Int, height: Int) = new Labyrinth(width, height, new Builder(width, height).walls)
-  
-  def createWalls(numWalls: Int): BitSet = BitSet.fromBitMask(new Array[Long](numWalls / 64 + 1))
-  
+
+  def createWalls(numWalls: Int): BitSet = {
+    val ar = new Array[Long](numWalls / 64 + 1)
+    (0 until ar.length).foreach(i => ar(i) = -1)
+    BitSet.fromBitMask(ar)
+  }
+
   private class Builder(val width: Int, val height: Int) {
     val rand = new Random
     val numRooms = width * height
     val rooms = new Array[Int](numRooms)
-    (1 to numRooms).foreach(rooms(_) = -1)
+    (0 until numRooms).foreach(rooms(_) = -1)
 
     // A bit too much, but so what
     val numWalls = numRooms * 2
-    
-    val wallOrder = (1 to numWalls).map(i => (i, rand.nextFloat())).sortBy(_._2)
+
+    val wallOrder = (0 until numWalls).map(i => (i, rand.nextFloat())).sortBy(_._2)
     val walls = createWalls(numWalls)
-    (1 to numWalls).foreach(i => punctureWall(wallOrder(i)._1))
-        
+    (0 until numWalls).foreach(i => punctureWall(wallOrder(i)._1))
+
     // Punctures the i'th wall, if the rooms are not already connected
     private def punctureWall(i: Int) = {
-      
+
     }
   }
-  
+
 }
-
-/*
- 
- North/south walls have odd y-indices, east/west walls have even y-indices.
- 
- 
- +- x,2y+1 -+
- |   x,y    |
- x-1,2y    x,2y
- -- x,2y-1 -+
- 
- 
- + 0,5 +-1,5-+-2,5-+
- |    0,4   1,4  2,4
- | 0,2 | 1,2 | 2,2 
- + 0,3 +-1,3-+-2,3-+
- |    0,2   1,2  2,2
- | 0,1 | 1,1 | 2,1 
- + 0,1 +-1,1-+-2,1-+
- |    0,0   1,0   2,0
- | 0,0 | 1,0   2,0
- +-----+-----+-----+
-
-*/
