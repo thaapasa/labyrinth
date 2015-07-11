@@ -80,7 +80,37 @@ object Labyrinth {
 
     // Punctures the i'th wall, if the rooms are not already connected
     private def punctureWall(i: Int) = {
+      val (r1, dir) = Coordinate.fromWall(i, width)
+      val r2 = r1.to(dir)
 
+      if (inRange(r1) && inRange(r2)) {
+        val r1Parent = findParent(r1.index(width))
+        val r2Parent = findParent(r2.index(width))
+        if (r1Parent != r2Parent) {
+          walls(i) = false
+          rooms(r2Parent) = r1Parent
+        }
+      }
+    }
+
+    @inline private def inRange(c: Coordinate) = c.x >= 0 && c.x < width && c.y >= 0 && c.y < height
+
+    def findParent(c: Int): Int = {
+      def find(c: Int): Int = {
+        if (rooms(c) == -1) c
+        else find(rooms(c))
+      }
+      val parent = find(c)
+
+      def shorten(c: Int, parent: Int): Unit = {
+        val next = rooms(c)
+        if (next != -1) {
+          rooms(c) = parent
+          shorten(next, parent)
+        }
+      }
+      shorten(c, parent)
+      parent
     }
   }
 
