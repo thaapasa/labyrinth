@@ -74,9 +74,10 @@ object Labyrinth {
 
     // A bit too much, but so what
     val numWalls = numRooms * 2
-
-    val wallOrder = (0 until numWalls).map(i => (i, rand.nextInt())).sortBy(_._2).map(_._1)
     val walls = createWalls(numWalls)
+
+    val wallOrder = (0 until numWalls).toArray
+    shuffle(wallOrder)
     (0 until numWalls).foreach(i => punctureWall(wallOrder(i)))
 
     // Punctures the i'th wall, if the rooms are not already connected
@@ -101,7 +102,19 @@ object Labyrinth {
         shortenPath(r2i, r1Parent)
       }
     }
-    
+
+    def shuffle(l: Array[Int]) = {
+      // TODO: Check Fisher-Yates shuffle specs
+      val size = l.size
+      for (i <- 0 until size) swap(l, i, rand.nextInt(size - i) + i)
+    }
+
+    @inline def swap(a: Array[Int], i: Int, j: Int) = {
+      val s = a(i)
+      a(i) = a(j)
+      a(j) = s
+    }
+
     @inline private final def inRange(c: Coordinate) = c.x >= 0 && c.x < width && c.y >= 0 && c.y < height
 
     @inline private final def findRoot(c: Int): Int =
