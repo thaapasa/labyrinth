@@ -57,6 +57,7 @@ object Labyrinth {
   /** West is -x (right) */
   case object West extends Direction(-1, 0, -1, 0)
 
+  /** Creates a new random labyrinth of {@code width} x {@code height} dimensions. */
   def apply(width: Int, height: Int) = new Labyrinth(width, height, new Builder(width, height).walls)
 
   def createWalls(numWalls: Int): BitSet = {
@@ -65,7 +66,7 @@ object Labyrinth {
     BitSet.fromBitMask(ar)
   }
 
-  private class Builder(val width: Int, val height: Int) {
+  private final class Builder(val width: Int, val height: Int) {
     val rand = new Random
     val numRooms = width * height
     val rooms = new Array[Int](numRooms)
@@ -74,44 +75,47 @@ object Labyrinth {
     // A bit too much, but so what
     val numWalls = numRooms * 2
 
-    val wallOrder = (0 until numWalls).map(i => (i, rand.nextFloat())).sortBy(_._2)
+    val wallOrder = (0 until numWalls).map(i => (i, rand.nextInt())).sortBy(_._2)
     val walls = createWalls(numWalls)
     (0 until numWalls).foreach(i => punctureWall(wallOrder(i)._1))
 
     // Punctures the i'th wall, if the rooms are not already connected
-    private def punctureWall(i: Int) = {
+    private final def punctureWall(i: Int) = {
       val (r1, dir) = Coordinate.fromWall(i, width)
       val r2 = r1.to(dir)
 
       if (inRange(r1) && inRange(r2)) {
-        val r1Parent = findParent(r1.index(width))
-        val r2Parent = findParent(r2.index(width))
+        // Find rooms that the wall connects
+        val r1i = r1.index(width)
+        val r2i = r2.index(width)
+        // Find roots of each room tree
+        val r1Parent = findRoot(r1i)
+        val r2Parent = findRoot(r2i)
+        // If rooms are in different trees, then break the wall & connect room trees
         if (r1Parent != r2Parent) {
           walls(i) = false
           rooms(r2Parent) = r1Parent
         }
+        // Shorten root paths (moves all room tree leafs on search path directly under the root)
+        shortenPath(r1i, r1Parent)
+        shortenPath(r2i, r1Parent)
       }
     }
 
-    @inline private def inRange(c: Coordinate) = c.x >= 0 && c.x < width && c.y >= 0 && c.y < height
+    @inline private final def inRange(c: Coordinate) = c.x >= 0 && c.x < width && c.y >= 0 && c.y < height
 
-    def findParent(c: Int): Int = {
-      def find(c: Int): Int = {
-        if (rooms(c) == -1) c
-        else find(rooms(c))
-      }
-      val parent = find(c)
+    @inline private final def findRoot(c: Int): Int =
+      if (rooms(c) == -1) c
+      else findRoot(rooms(c))
 
-      def shorten(c: Int, parent: Int): Unit = {
-        val next = rooms(c)
-        if (next != -1) {
-          rooms(c) = parent
-          shorten(next, parent)
-        }
+    @inline private final def shortenPath(c: Int, parent: Int): Unit = {
+      val next = rooms(c)
+      if (next != -1) {
+        rooms(c) = parent
+        shortenPath(next, parent)
       }
-      shorten(c, parent)
-      parent
     }
+
   }
 
 }

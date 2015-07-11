@@ -19,7 +19,7 @@ object LabyrinthTest {
   }
     
   def main(args: Array[String]): Unit = {
-    val l = Labyrinth(10, 10)
+    val l = Labyrinth(20, 10)
     output(l)  
   }
   
