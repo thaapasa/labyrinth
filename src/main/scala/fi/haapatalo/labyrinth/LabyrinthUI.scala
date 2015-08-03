@@ -12,18 +12,18 @@ class LabyrinthUI extends Application {
 
   import Labyrinth.CoordinateExt
 
-  val width = 30
-  val height = 25
-  val roomSize = 30
-  val wallSize = 5
-  val doorSize = 0.7d * roomSize
+  val width = 300
+  val height = 250
+  val roomSize = 1
+  val wallSize = 1
+  val doorSize = 1d * roomSize
   val imWidth = width * roomSize + (width + 1) * wallSize
   val imHeight = height * roomSize + (height + 1) * wallSize
 
   object Colors {
     val background = Color.BLACK
     val room = Color.WHITE
-    val wall = new Color(1, 0.9, 0.9, 1.0)
+    val wall = Color.WHITE // new Color(1, 0.9, 0.9, 1.0)
   }
 
   val labyrinth = Labyrinth(width, height)

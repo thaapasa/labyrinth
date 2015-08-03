@@ -3,6 +3,8 @@ package fi.haapatalo.labyrinth
 import scala.collection.mutable.BitSet
 import scala.util.Random
 
+import Labyrinth.CoordinateExt
+
 class Labyrinth(val width: Int, val height: Int, walls: BitSet) {
 
   import Labyrinth.CoordinateExt
@@ -104,15 +106,15 @@ object Labyrinth {
     }
 
     def shuffle(l: Array[Int]) = {
-      // TODO: Check Fisher-Yates shuffle specs
-      val size = l.size
-      for (i <- 0 until size) swap(l, i, rand.nextInt(size - i) + i)
-    }
+      @inline def swap(a: Array[Int], i: Int, j: Int) = {
+        val s = a(i)
+        a(i) = a(j)
+        a(j) = s
+      }
 
-    @inline def swap(a: Array[Int], i: Int, j: Int) = {
-      val s = a(i)
-      a(i) = a(j)
-      a(j) = s
+      // Fisher-Yates shuffle
+      val size = l.size
+      for (i <- (1 to (size - 1)).reverse) swap(l, i, rand.nextInt(i + 1))
     }
 
     @inline private final def inRange(c: Coordinate) = c.x >= 0 && c.x < width && c.y >= 0 && c.y < height

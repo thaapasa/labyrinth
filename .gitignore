@@ -4,3 +4,5 @@ bin
 .settings
 .classpath
 .tmpBin
+.cache-main
+.cache-tests
