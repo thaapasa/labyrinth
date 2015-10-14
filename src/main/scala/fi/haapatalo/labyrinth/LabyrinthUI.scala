@@ -1,9 +1,13 @@
 package fi.haapatalo.labyrinth
 
+import java.io.File
+
 import javafx.application.Application
+import javafx.embed.swing.SwingFXUtils
 import javafx.scene.{ Group, Scene }
 import javafx.scene.canvas.Canvas
 import javafx.stage.Stage
+import javax.imageio.ImageIO
 
 class LabyrinthUI extends Application {
 
@@ -13,6 +17,8 @@ class LabyrinthUI extends Application {
   val height = 500
 
   val labyrinth = Labyrinth(width, height)
+
+  val saveImage = true
 
   override def start(stage: Stage) {
     val ld = new LabyrinthDrawer(labyrinth)
@@ -24,6 +30,12 @@ class LabyrinthUI extends Application {
     stage.setTitle("Labyrinth")
     stage.setScene(scene)
     stage.show()
+
+    if (saveImage) {
+      val image = drawing.snapshot(null, null)
+      val bImage = SwingFXUtils.fromFXImage(image, null)
+      ImageIO.write(bImage, "PNG", new File("output.png"));
+    }
   }
 
 }
