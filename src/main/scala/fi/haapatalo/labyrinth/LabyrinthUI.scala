@@ -13,8 +13,17 @@ class LabyrinthUI extends Application {
 
   import Labyrinth.CoordinateExt
 
-  val width = 950
-  val height = 500
+  val resolutions = Map(
+    "HD" -> (1920, 1080),
+    "WUXGA" -> (1920, 1200),
+    "WQHD" -> (2560, 1440),
+    "4K" -> (3840, 2160)
+    )
+
+  val desiredSize = resolutions("HD")
+
+  val width = desiredSize._1 / 2 - 1
+  val height = desiredSize._2 / 2 - 1
 
   val labyrinth = Labyrinth(width, height)
 
