@@ -1,29 +1,26 @@
 package fi.haapatalo.labyrinth
 
 import java.io.File
-
 import javafx.application.Application
 import javafx.embed.swing.SwingFXUtils
-import javafx.scene.{ Group, Scene }
 import javafx.scene.canvas.Canvas
+import javafx.scene.{Group, Scene}
 import javafx.stage.Stage
 import javax.imageio.ImageIO
 
 class LabyrinthUI extends Application {
-
-  import Labyrinth.CoordinateExt
 
   val resolutions = Map(
     "HD" -> (1920, 1080),
     "WUXGA" -> (1920, 1200),
     "WQHD" -> (2560, 1440),
     "4K" -> (3840, 2160)
-    )
+  )
 
   val desiredSize = resolutions("HD")
 
-  val width = desiredSize._1 / 2 - 1
-  val height = desiredSize._2 / 2 - 1
+  val width: Int = desiredSize._1 / 2 - 1
+  val height: Int = desiredSize._2 / 2 - 1
 
   val labyrinth = Labyrinth(width, height)
 
