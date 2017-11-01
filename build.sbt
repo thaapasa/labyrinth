@@ -1,4 +1,4 @@
-scalaVersion := "2.11.7"
+scalaVersion := "2.12.4"
 
 organization := "fi.haapatalo.labyrinth"
 
@@ -29,15 +29,6 @@ unmanagedSourceDirectories in Compile := (scalaSource in Compile).value :: Nil
 
 // Get rid of Java test source directories
 unmanagedSourceDirectories in Test := (scalaSource in Test).value :: Nil
-
-// Defined execution environment
-EclipseKeys.executionEnvironment := Some(EclipseExecutionEnvironment.JavaSE18)
-
-// Use source + resource directories as Eclipse source folders
-EclipseKeys.createSrc := EclipseCreateSrc.Default + EclipseCreateSrc.Resource
-
-// Attach source JARs to Eclipse
-EclipseKeys.withSource := true
 
 // This skips automatic dependency resolution when version is changed.
 // Remember to run "update" in sbt when necessary!

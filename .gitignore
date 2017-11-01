@@ -8,3 +8,5 @@ bin
 .cache-tests
 target
 *.png
+*.iml
+.idea
